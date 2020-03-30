@@ -1,0 +1,4 @@
+.idea/**
+src/.mypy_cache/**
+venv/**
+**.pyc
