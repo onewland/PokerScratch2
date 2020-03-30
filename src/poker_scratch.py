@@ -1,8 +1,10 @@
 from deuces import Deck
 from game_orchestrator import HoldemGameLoop
-from player import Player, Game
+from player import Player
+from game_round import Game
 
-player_names = ['oliver', 'josh', 'tyler', 'wilfred']
+player_names = ["oliver", "josh", "tyler", "wilfred"]
+
 
 def main():
     players = [Player(name, []) for name in player_names]
@@ -12,11 +14,12 @@ def main():
         print(orchestrator)
     print(orchestrator.bets)
 
+
 def print_evaluation(evaluator, hand):
     rank_class = evaluator.get_rank_class(evaluator.evaluate(hand, []))
     as_string = evaluator.class_to_string(rank_class)
     print(f"{as_string} - {rank_class}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,0 +1,3 @@
+- separate flows at 3 levels in classes: session, game, game round
+- separate dealer and bettor rotations into classes, abstract from other game flow
+- accept user input for bet/fold
