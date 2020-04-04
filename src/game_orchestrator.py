@@ -40,6 +40,10 @@ class Bet(NamedTuple):
     player: Player
 
 
+class UnrecognizedGameStateError(BaseException):
+    pass
+
+
 class HoldemGameLoop:
     def __init__(self, game, *, little_ante, big_ante):
         self.game = game
@@ -153,7 +157,7 @@ class HoldemGameLoop:
             return False
 
         else:
-            return False
+            raise UnrecognizedGameStateError(self.game_state)
 
     def collect_antes_from_players(self):
         next_two_player_indices = [

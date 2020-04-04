@@ -1,7 +1,7 @@
 from deuces import Deck
 from game_orchestrator import HoldemGameLoop
 from player import Player
-from game_round import Game
+from game import Game
 
 player_names = ["oliver", "josh", "tyler", "wilfred"]
 
