@@ -1,44 +1,14 @@
 import uuid
-from typing import List, Any, Dict
+from typing import Any, Dict
 
 from game import Game
 from player import Player
-
-
-class PlayerRotationEmpty(BaseException):
-    pass
-
-
-class PlayerRotation:
-    def __init__(self, players: List[Player], start_index=0):
-        self.players_original = players
-        self.players = players
-        self.current_player_idx = start_index
-
-    def player_count(self) -> int:
-        return len(self.players)
-
-    def advance(self) -> Player:
-        self.current_player_idx = (self.current_player_idx + 1) % len(self.players)
-        return self.get_current_player()
-
-    def get_current_player(self) -> Player:
-        if len(self.players) > 0:
-            return self.players[self.current_player_idx]
-        else:
-            raise PlayerRotationEmpty()
-
-    def remove_current(self) -> None:
-        self.remove(self.players[self.current_player_idx])
-
-    def remove(self, player) -> None:
-        if self.players[self.current_player_idx] == player:
-            self.advance()
-        self.players.remove(player)
+from player_rotation import PlayerRotation
 
 
 class InsufficientBetException(BaseException):
     pass
+
 
 class DataValidationException(Exception):
     data: Dict[str, Any]
@@ -46,9 +16,11 @@ class DataValidationException(Exception):
     def __init__(self, **kwargs):
         self.data = kwargs
 
+
 class InvalidWagerAdjustment(DataValidationException):
     def __init__(self, **kwargs):
         self.data = kwargs
+
 
 class InsufficientPlayerFunds(DataValidationException):
     def __init__(self, **kwargs):
@@ -58,7 +30,13 @@ class InsufficientPlayerFunds(DataValidationException):
 class BettingRound:
     min_raise: int
 
-    def __init__(self, betting_rotation: PlayerRotation, game: Game, last_raise_option = False, min_raise = 1):
+    def __init__(
+        self,
+        betting_rotation: PlayerRotation,
+        game: Game,
+        last_raise_option: bool = False,
+        min_raise: int = 1,
+    ) -> object:
         self.min_raise = min_raise
         self.id = uuid.uuid4().hex
         self.current_wager = 0
@@ -73,9 +51,13 @@ class BettingRound:
         self.round_finished = False
 
     def is_settled_up(self):
-        if self.round_finished: return True
+        if self.round_finished:
+            return True
 
-        if self.current_bettor == self.last_raise_player:
+        if (
+            self.current_bettor == self.last_raise_player
+            or len(self.betting_rotation.players) == 1
+        ):
             return not self.last_raise_option
         else:
             return False
@@ -86,20 +68,26 @@ class BettingRound:
             return
 
         if self.current_bettor.current_wager < self.current_wager:
-            raise InsufficientBetException(current_wager = self.current_wager,
-                                           player_wager = self.current_bettor.current_wager)
+            raise InsufficientBetException(
+                current_wager=self.current_wager,
+                player_wager=self.current_bettor.current_wager,
+            )
         if self.last_raise_player is None:
             self.last_raise_player = self.current_bettor
         self.current_bettor = self.betting_rotation.advance()
 
     def player_increase_wager_and_advance(self, player, adjusted_wager: int):
-        if self.current_wager > adjusted_wager or \
-                player.current_wager > adjusted_wager or \
-                adjusted_wager - player.current_wager < self.min_raise:
-            raise InvalidWagerAdjustment(table_wager=self.current_wager,
-                                         player_wager=player.current_wager,
-                                         adjusted_wager=adjusted_wager,
-                                         min_raise=self.min_raise)
+        if (
+            self.current_wager > adjusted_wager
+            or player.current_wager > adjusted_wager
+            or adjusted_wager - player.current_wager < self.min_raise
+        ):
+            raise InvalidWagerAdjustment(
+                table_wager=self.current_wager,
+                player_wager=player.current_wager,
+                adjusted_wager=adjusted_wager,
+                min_raise=self.min_raise,
+            )
         else:
             adjustment = adjusted_wager - player.current_wager
             self.adjust_player_wager(player, adjustment)
@@ -114,6 +102,9 @@ class BettingRound:
         if player.current_wager == self.current_wager:
             self.advance_player()
 
+    def player_fold(self, player):
+        self.betting_rotation.remove(player)
+
     def adjust_player_wager(self, player: Player, adjustment):
         if player.current_bank - adjustment >= 0:
             self.round_pot += adjustment
@@ -121,3 +112,11 @@ class BettingRound:
             player.current_bank -= adjustment
         else:
             raise InsufficientPlayerFunds(player=player, adjustment=adjustment)
+
+    def dict_repr(self):
+        return {
+            "round_pot": self.round_pot,
+            "finished": self.round_finished,
+            "current_wager": self.current_wager,
+            "current_bettor": self.current_bettor,
+        }

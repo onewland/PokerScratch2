@@ -3,3 +3,6 @@ src/.mypy_cache/**
 venv/**
 **.pyc
 .gitattributes
+/src/.coverage
+.coverage
+src/htmlcov

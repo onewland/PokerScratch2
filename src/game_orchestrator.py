@@ -4,7 +4,7 @@ import logging
 import random
 from copy import copy
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, List, Any
 
 from deuces import Evaluator, Card
 from player import Player
@@ -45,6 +45,8 @@ class UnrecognizedGameStateError(BaseException):
 
 
 class HoldemGameLoop:
+    shared_cards: List[int]
+
     def __init__(self, game, *, little_ante, big_ante):
         self.game = game
         self.pot = 0
@@ -66,9 +68,9 @@ class HoldemGameLoop:
 
     def json_dict(self):
         return {
-            'game_state': str(self.game_state),
-            'round_players': [dataclasses.asdict(p) for p in self.round_players],
-            'shared_cards': self.shared_cards
+            "game_state": str(self.game_state),
+            "round_players": [dataclasses.asdict(p) for p in self.round_players],
+            "shared_cards": self.shared_cards,
         }
 
     def __repr__(self):
@@ -215,7 +217,9 @@ class HoldemGameLoop:
         if self.current_wager - player_marginal_hand_value_guess > 0:
             self.fold_player(player)
         else:
-            self.place_bet(player, player_marginal_hand_value_guess - player.current_wager)
+            self.place_bet(
+                player, player_marginal_hand_value_guess - player.current_wager
+            )
 
         self.advance_bettor()
         return True

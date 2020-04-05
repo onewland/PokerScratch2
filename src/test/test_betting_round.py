@@ -2,47 +2,32 @@ import unittest
 import unittest.mock
 
 import player
-from betting_round import PlayerRotation, BettingRound, InvalidWagerAdjustment, InsufficientPlayerFunds
+from betting_round import (
+    BettingRound,
+    InvalidWagerAdjustment,
+    InsufficientPlayerFunds,
+)
+from hand import Hand
+from player_rotation import PlayerRotation
 
-
-class TestPlayerRotation(unittest.TestCase):
-    def setUp(self) -> None:
-        self.players = [player.Player(cards = [], handle = f"p{n}") for n in range(1,4)]
-        self.player_rotation = PlayerRotation(self.players)
-
-    def test_advance_circles(self):
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[0])
-        self.player_rotation.advance()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[1])
-        self.player_rotation.advance()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[2])
-        self.player_rotation.advance()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[0])
-
-    def test_remove_current_player(self):
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[0])
-        self.player_rotation.remove_current()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[1])
-
-    def test_remove_last_player_while_current(self):
-        self.player_rotation.advance()
-        self.player_rotation.advance()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[2])
-
-        self.player_rotation.remove_current()
-        self.assertEqual(self.player_rotation.get_current_player(), self.players[0])
 
 class TestBettingRound(unittest.TestCase):
     def setUp(self) -> None:
         self.START_BANK = 25
         self.MIN_RAISE = 5
-        self.players = [player.Player(cards=[], handle=f"p{n}", current_bank=self.START_BANK) for n in range(1, 4)]
+        self.players = [
+            player.Player(hand=Hand([]), handle=f"p{n}", current_bank=self.START_BANK)
+            for n in range(1, 4)
+        ]
         self.player1 = self.players[0]
         self.player2 = self.players[1]
         self.player_rotation = PlayerRotation(self.players)
         self.game = unittest.mock.Mock()
-        self.betting_round = BettingRound(game=self.game, betting_rotation=self.player_rotation,
-                                          min_raise=self.MIN_RAISE)
+        self.betting_round = BettingRound(
+            game=self.game,
+            betting_rotation=self.player_rotation,
+            min_raise=self.MIN_RAISE,
+        )
 
     def test_is_settled_up_should_be_false(self):
         self.assertFalse(self.betting_round.is_settled_up())
@@ -55,8 +40,11 @@ class TestBettingRound(unittest.TestCase):
         self.assertTrue(self.betting_round.is_settled_up())
 
     def test_is_settled_up_should_be_true_when_advanced_to_end_with_option(self):
-        option_round = BettingRound(game=self.game, betting_rotation=self.player_rotation,
-                                    last_raise_option=True)
+        option_round = BettingRound(
+            game=self.game,
+            betting_rotation=self.player_rotation,
+            last_raise_option=True,
+        )
         option_round.advance_player()
         option_round.advance_player()
         option_round.advance_player()
@@ -74,7 +62,9 @@ class TestBettingRound(unittest.TestCase):
         self.assertRaises(InvalidWagerAdjustment, self.bet_too_small())
 
     def test_raise_happy_path(self):
-        self.betting_round.player_increase_wager_and_advance(self.player1, self.MIN_RAISE)
+        self.betting_round.player_increase_wager_and_advance(
+            self.player1, self.MIN_RAISE
+        )
 
         self.assertEqual(self.player1.current_bank, self.START_BANK - self.MIN_RAISE)
         self.assertEqual(self.betting_round.round_pot, self.MIN_RAISE)
@@ -85,4 +75,6 @@ class TestBettingRound(unittest.TestCase):
 
     @unittest.skip
     def bet_too_rich(self):
-        self.betting_round.player_increase_wager_and_advance(self.player1, self.START_BANK * 2)
+        self.betting_round.player_increase_wager_and_advance(
+            self.player1, self.START_BANK * 2
+        )
