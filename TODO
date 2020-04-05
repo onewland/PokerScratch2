@@ -1,7 +1,5 @@
-- separate flows at 3 levels in classes: session, game, game round
-- separate dealer and bettor rotations into classes, abstract from other game flow
-- unit tests
-- accept user input for bet/fold
+- create session flow
+- unit tests for CommandEvaluator
 - handle not enough funds
-
+- handle all-in conditions
 - split pots?
