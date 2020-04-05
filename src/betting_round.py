@@ -50,6 +50,8 @@ class BettingRound:
         self.last_raise_option = last_raise_option
         self.game = game
         self.round_finished = False
+        for player in self.betting_rotation.players:
+            player.current_wager = 0
 
     def is_settled_up(self):
         if self.round_finished:
@@ -76,7 +78,7 @@ class BettingRound:
 
         self.current_bettor = self.betting_rotation.advance()
 
-    def player_increase_wager_and_advance(self, player, adjusted_wager: int):
+    def player_increase_wager_and_advance(self, player: Player, adjusted_wager: int):
         if (
             self.current_wager > adjusted_wager
             or player.current_wager > adjusted_wager
@@ -116,6 +118,8 @@ class BettingRound:
             self.round_pot += adjustment
             player.current_wager += adjustment
             player.current_bank -= adjustment
+            if self.current_wager < player.current_wager:
+                self.current_wager = player.current_wager
         else:
             raise InsufficientPlayerFunds(player=player, adjustment=adjustment)
 

@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 import config
 from command_evaluator import CommandEvaluator
@@ -21,8 +21,8 @@ service.deal_cards_1_2()
 
 
 @app.route("/")
-def hello_world():
-    return "Hello, World!"
+def friendly_god_game_view():
+    return render_template('root_template.html', service=service)
 
 
 @app.route("/v1/game", methods=["GET"])
@@ -69,7 +69,7 @@ def player_call():
     return {"service": service.dict_repr(), "commandResult": result}
 
 
-@app.route("/v1/game/call", methods=["POST"])
+@app.route("/v1/game/check", methods=["POST"])
 def player_check():
     command = request.get_json()
     player_id = command["player_id"]

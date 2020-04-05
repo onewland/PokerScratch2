@@ -118,8 +118,8 @@ class GameService:
         min_rank = 8000
         top_player = None
         for player in self.round_rotation.players:
-            Card.print_pretty_cards(player.cards + self.shared_cards)
-            player_rank = self.evaluator.evaluate(player.cards, self.shared_cards)
+            Card.print_pretty_cards(player.hand.cards + self.shared_cards)
+            player_rank = self.evaluator.evaluate(player.hand.cards, self.shared_cards)
             if player_rank < min_rank:
                 min_rank = player_rank
                 top_player = player
@@ -143,7 +143,10 @@ class GameService:
         self._deal_n_shared_cards(1)
 
     def _deal_n_shared_cards(self, n):
-        self.shared_cards.append(self.game.deck.draw(n))
+        draw = self.game.deck.draw(n)
+        if isinstance(draw, int):
+            draw = [draw]
+        self.shared_cards.extend(draw)
         self.inside_betting_round = True
 
     def dict_repr(self):
@@ -154,3 +157,6 @@ class GameService:
             "inside_betting_round": self.inside_betting_round,
             "winner": self.winner,
         }
+
+    def shared_as_nice_str(self):
+        return Card.cards_as_str(self.shared_cards)

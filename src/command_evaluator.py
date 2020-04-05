@@ -34,7 +34,7 @@ class CommandEvaluator:
             self.game_service.advance_phase_if_ready()
             return CommandResult(success=True)
         else:
-            raise NotImplemented("can't do turn enforcement yet")
+            raise NotImplementedError("can't do turn enforcement yet")
 
     def process_fold(self, command: player_command.FoldCommand) -> CommandResult:
         if not self.game_service.inside_betting_round:
@@ -49,7 +49,7 @@ class CommandEvaluator:
             self.game_service.advance_phase_if_ready()
             return CommandResult(success=True)
         else:
-            raise NotImplemented("can't do turn enforcement yet")
+            raise NotImplementedError("can't do turn enforcement yet")
 
     def process_call(self, command: player_command.CallCommand) -> CommandResult:
         if not self.game_service.inside_betting_round:
@@ -64,7 +64,7 @@ class CommandEvaluator:
             self.game_service.advance_phase_if_ready()
             return CommandResult(success=True)
         else:
-            raise NotImplemented("can't do turn enforcement yet")
+            raise NotImplementedError("can't do turn enforcement yet")
 
     def process_check(self, command: player_command.CheckCommand) -> CommandResult:
         if not self.game_service.inside_betting_round:
@@ -79,4 +79,4 @@ class CommandEvaluator:
             self.game_service.advance_phase_if_ready()
             return CommandResult(success=True)
         else:
-            raise NotImplemented("can't do turn enforcement yet")
+            raise NotImplementedError("can't do turn enforcement yet")
