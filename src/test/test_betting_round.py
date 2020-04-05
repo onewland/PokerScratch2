@@ -33,6 +33,7 @@ class TestBettingRound(unittest.TestCase):
         self.assertFalse(self.betting_round.is_settled_up())
 
     def test_is_settled_up_should_be_true_when_advanced_to_end_no_option(self):
+        self.betting_round.last_raise_player = self.players[0]
         self.betting_round.advance_player()
         self.betting_round.advance_player()
         self.betting_round.advance_player()
@@ -46,8 +47,10 @@ class TestBettingRound(unittest.TestCase):
             last_raise_option=True,
         )
         option_round.advance_player()
+        option_round.last_raise_player = self.players[0]
         option_round.advance_player()
         option_round.advance_player()
+
         self.assertFalse(option_round.is_settled_up())
 
         option_round.advance_player()

@@ -27,6 +27,7 @@ class TestPlayerRotation(unittest.TestCase):
         self.assertEqual(self.player_rotation.get_current_player(), self.players[1])
 
     def test_remove_last_player_while_current(self):
+        self.assertEqual(self.player_rotation.get_current_player(), self.players[0])
         self.player_rotation.advance()
         self.player_rotation.advance()
         self.assertEqual(self.player_rotation.get_current_player(), self.players[2])

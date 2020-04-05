@@ -1,3 +1,4 @@
+import logging
 import uuid
 from typing import Any, Dict
 
@@ -72,8 +73,7 @@ class BettingRound:
                 current_wager=self.current_wager,
                 player_wager=self.current_bettor.current_wager,
             )
-        if self.last_raise_player is None:
-            self.last_raise_player = self.current_bettor
+
         self.current_bettor = self.betting_rotation.advance()
 
     def player_increase_wager_and_advance(self, player, adjusted_wager: int):
@@ -92,6 +92,7 @@ class BettingRound:
             adjustment = adjusted_wager - player.current_wager
             self.adjust_player_wager(player, adjustment)
             self.advance_player()
+            self.last_raise_player = player
 
     def player_call_and_advance(self, player):
         adjustment = self.current_wager - player.current_wager
@@ -102,10 +103,15 @@ class BettingRound:
         if player.current_wager == self.current_wager:
             self.advance_player()
 
+            if self.last_raise_player is None:
+                self.last_raise_player = player
+
     def player_fold(self, player):
         self.betting_rotation.remove(player)
+        self.current_bettor = self.betting_rotation.get_current_player()
 
     def adjust_player_wager(self, player: Player, adjustment):
+        logging.info(f"player {player} wager adjustment {adjustment}")
         if player.current_bank - adjustment >= 0:
             self.round_pot += adjustment
             player.current_wager += adjustment
@@ -119,4 +125,6 @@ class BettingRound:
             "finished": self.round_finished,
             "current_wager": self.current_wager,
             "current_bettor": self.current_bettor,
+            "last_raise": self.last_raise_player,
+            "last_raise_option": self.last_raise_option,
         }

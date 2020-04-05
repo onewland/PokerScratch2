@@ -12,21 +12,16 @@ class RaiseCommand(PlayerCommand):
     new_wager: int
 
 
+@dataclass
 class FoldCommand(PlayerCommand):
     pass
 
 
+@dataclass
 class CallCommand(PlayerCommand):
     pass
 
 
+@dataclass
 class CheckCommand(PlayerCommand):
-    pass
-
-
-class BuyInCommand(PlayerCommand):
-    pass
-
-
-class HaltGameCommand(PlayerCommand):
     pass
