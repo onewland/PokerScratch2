@@ -1,4 +1,6 @@
 <!doctype html>
+{% set service = session.current_round %}
+{% set round = service.current_betting_round %}
 <html>
     <head>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -6,6 +8,7 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="refresh" content="2" />
     </head>
     <body>
         <div class="container mt-md-2">
@@ -22,15 +25,36 @@
                     </ul>
                 </div>
                 <div class="col">
-                    {% set round = service.current_betting_round %}
-
                     <h3>Round State</h3>
                     <hr/>
                     <ul>
+                        <li>last raise option - {{ round.last_raise_option }}</li>
                         <li>wager - {{ round.current_wager }}</li>
                         <li>current_pot - {{ round.round_pot }}</li>
                     </ul>
                 </div>
+                <div class="col">
+                    <h3>Session state</h3>
+                    <hr/>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Funds</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in session.game.players %}
+                                <tr>
+                                    <td>{{ player.handle }}</td>
+                                    <td>{{ player.current_bank }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
 
             <br/>
@@ -89,6 +113,9 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div class="row">
             </div>
         </div>
     </body>

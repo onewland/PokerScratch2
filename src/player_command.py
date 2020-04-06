@@ -25,3 +25,15 @@ class CallCommand(PlayerCommand):
 @dataclass
 class CheckCommand(PlayerCommand):
     pass
+
+@dataclass
+class NextGameCommand(PlayerCommand):
+    pass
+
+@dataclass
+class EndSessionCommand(PlayerCommand):
+    pass
+
+@dataclass
+class StartNextGameCommand(PlayerCommand):
+    pass

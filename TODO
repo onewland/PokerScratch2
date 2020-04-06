@@ -1,5 +1,9 @@
-- create session flow
+- make session flow cleaner (weird next_game -> terminate behavior)
+
+- handle all-in conditions
+   - split pots?
+
+- APIs to handle the player-specific views of game state
+
 - unit tests for CommandEvaluator
 - handle not enough funds
-- handle all-in conditions
-- split pots?

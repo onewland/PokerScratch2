@@ -210,4 +210,4 @@ class Card:
         """
             Expects a list of cards in integer form.
         """
-        return ",".join([Card.int_to_pretty_str(c) for c in card_ints])
+        return ",".join(Card.int_to_pretty_str(c) for c in card_ints)

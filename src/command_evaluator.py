@@ -3,11 +3,18 @@ from dataclasses import dataclass
 import config
 import player_command
 from game_service import GameService, GamePhase
+from session import Session
 
 
 @dataclass(frozen=True)
 class CommandResult:
     success: bool
+
+@dataclass(frozen=True)
+class CommandResultSessionOver(CommandResult):
+    payouts: {
+
+    }
 
 
 @dataclass(frozen=True)
@@ -18,8 +25,12 @@ class CommandResultNotInBettingRound(CommandResult):
 class CommandEvaluator:
     game_service: GameService
 
-    def __init__(self, game_service: GameService):
-        self.game_service = game_service
+    def __init__(self, session: Session):
+        self.session = session
+
+    @property
+    def game_service(self) -> GameService:
+        return self.session.current_round
 
     def process_raise(self, command: player_command.RaiseCommand):
         if not self.game_service.inside_betting_round:
@@ -80,3 +91,16 @@ class CommandEvaluator:
             return CommandResult(success=True)
         else:
             raise NotImplementedError("can't do turn enforcement yet")
+
+    def process_next_game(self, command: player_command.NextGameCommand) -> CommandResult:
+        round_did_finish = self.session.distribute_round_funds()
+        if round_did_finish:
+            return CommandResult(success=True)
+
+        return CommandResult(success=False)
+
+    def process_start_next_game(self, command: player_command.StartNextGameCommand) -> CommandResult:
+        return CommandResult(success=self.session.start_next_round_if_ready())
+
+    def process_end_session(self, command: player_command.EndSessionCommand) -> CommandResult:
+        return

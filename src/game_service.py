@@ -6,6 +6,8 @@ from enum import Enum
 from betting_round import BettingRound
 from deuces import Evaluator, Card
 from game import Game
+from hand import Hand
+from player import Player
 from player_rotation import PlayerRotation
 
 
@@ -22,6 +24,8 @@ class GamePhase(Enum):
 
 
 class GameService:
+    winner: Player
+
     def __init__(self, *, game: Game, dealer_index=0):
         self.pot_total = 0
         self.game = game
@@ -38,6 +42,8 @@ class GameService:
         self.shared_cards = []
         self.winner = None
         self.evaluator = Evaluator()
+        for player in self.players:
+            player.hand = Hand([])
 
     def is_game_end(self):
         return (
