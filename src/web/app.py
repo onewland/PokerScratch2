@@ -18,7 +18,6 @@ players = [Player(handle=name, hand=Hand([]), id=uuid.uuid4())
            for name in player_names]
 print(players)
 game = Game(players, Deck(), little_ante=5, big_ante=10)
-# service = GameService(game=game)
 session = Session(game=game)
 
 command_evaluator = CommandEvaluator(session)

@@ -1,4 +1,5 @@
 - make session flow cleaner (weird next_game -> terminate behavior)
+- unit tests for session
 
 - handle all-in conditions
    - split pots?

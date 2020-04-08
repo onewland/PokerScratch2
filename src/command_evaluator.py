@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from typing import List
 
 import config
 import player_command
+from debt import Debt
 from game_service import GameService, GamePhase
 from session import Session
 
@@ -10,11 +12,10 @@ from session import Session
 class CommandResult:
     success: bool
 
+
 @dataclass(frozen=True)
 class CommandResultSessionOver(CommandResult):
-    payouts: {
-
-    }
+    payouts: List[Debt]
 
 
 @dataclass(frozen=True)
@@ -102,5 +103,5 @@ class CommandEvaluator:
     def process_start_next_game(self, command: player_command.StartNextGameCommand) -> CommandResult:
         return CommandResult(success=self.session.start_next_round_if_ready())
 
-    def process_end_session(self, command: player_command.EndSessionCommand) -> CommandResult:
-        return
+    def process_end_session(self, command: player_command.EndSessionCommand) -> CommandResultSessionOver:
+        return CommandResultSessionOver(success=True, debts=self.session.end_session())

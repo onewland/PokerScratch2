@@ -42,7 +42,6 @@ class Session:
     def end_session(self) -> List[Debt]:
         self.terminated = True
         total_player_offset = 0
-        players_offsets = {}
         owing_players = []
         owed_players = []
         debts = []
@@ -60,25 +59,21 @@ class Session:
         if total_player_offset != 0:
             raise ImpossibleCondition()
 
-        print(players_offsets)
-        print(owing_players)
-        print(owed_players)
-
         owing_players.sort(key=lambda x: x[1])
         owed_players.sort(key=lambda x: x[1])
 
         owed_player_idx = 0
         for debtor_offset in owing_players:
-            debtor, debt_reamining = debtor_offset[0], abs(debtor_offset[1])
+            debtor, debt_remaining = debtor_offset[0], abs(debtor_offset[1])
 
-            while debt_reamining > 0:
+            while debt_remaining > 0:
                 owed_player, owed = owed_players[owed_player_idx]
-                if debt_reamining >= owed:
+                if debt_remaining >= owed:
                     debts.append(Debt(debtor=debtor.handle, owed=owed_player.handle, amount=owed))
-                    debt_reamining -= owed
+                    debt_remaining -= owed
                     owed_player_idx += 1
                 else:
-                    debts.append(Debt(debtor=debtor.handle, owed=owed_player.handle, amount=debt_reamining))
-                    debt_reamining = 0
+                    debts.append(Debt(debtor=debtor.handle, owed=owed_player.handle, amount=debt_remaining))
+                    debt_remaining = 0
 
         return debts
