@@ -1,0 +1,122 @@
+<!doctype html>
+{% set service = session.current_round %}
+{% set round = service.current_betting_round %}
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="refresh" content="2" />
+    </head>
+    <body>
+        <div class="container mt-md-2">
+            <div class="row">
+                <div class="col">
+                    <h3>Board State</h3>
+                    <hr/>
+                    <ul>
+                        <li>phase - {{ service.phase }}</li>
+                        <li>in_betting_round - {{ service.inside_betting_round }}</li>
+                        <li>current_pot - {{ service.pot_total }}</li>
+                        <li>winner - {{ service.winner }}</li>
+                        <li>shared_cards - {{ service.shared_as_nice_str() }}</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>Round State</h3>
+                    <hr/>
+                    <ul>
+                        <li>last raise option - {{ round.last_raise_option }}</li>
+                        <li>wager - {{ round.current_wager }}</li>
+                        <li>current_pot - {{ round.round_pot }}</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>Session state</h3>
+                    <hr/>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Funds</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in session.game.players %}
+                                <tr>
+                                    <td>{{ player.handle }}</td>
+                                    <td>{{ player.current_bank }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col">
+                    {% set player = service.current_betting_round.current_bettor %}
+                    <table class='player-description table'>
+                        <thead>
+                            <tr>
+                                <th>Current Bettor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ID</td>
+                                <td>{{ player.id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ player.handle }}</td>
+                            </tr>
+                            <tr>
+                                <td>Hand</td>
+                                <td>{{ player.hand }}</td>
+                            </tr>
+                            <tr>
+                                <td>Wagered this round</td>
+                                <td>{{ player.current_wager }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col">
+                    {% set player = service.current_betting_round.last_raise_player %}
+                    <table class='player-description table'>
+                        <thead>
+                            <tr>
+                                <th>Last Raiser</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ID</td>
+                                <td>{{ player.id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ player.handle }}</td>
+                            </tr>
+                            <tr>
+                                <td>Hand</td>
+                                <td>{{ player.hand }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+            </div>
+        </div>
+    </body>
+</html>
