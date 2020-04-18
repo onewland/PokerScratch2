@@ -5,7 +5,7 @@ import config
 import player_command
 from debt import Debt
 from game_service import GameService, GamePhase
-from session import Session
+from game_session import GameSession
 
 
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class CommandResultNotInBettingRound(CommandResult):
 class CommandEvaluator:
     game_service: GameService
 
-    def __init__(self, session: Session):
+    def __init__(self, session: GameSession):
         self.session = session
 
     @property

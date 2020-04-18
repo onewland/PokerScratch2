@@ -1,6 +1,6 @@
 import uuid
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session
 
 import config
 from command_evaluator import CommandEvaluator
@@ -9,32 +9,45 @@ from game import Game
 from hand import Hand
 from player import Player
 from player_command import RaiseCommand, FoldCommand, CallCommand, CheckCommand, NextGameCommand
-from session import Session
+from player_manager import PlayerManager
+from game_session import GameSession
 
 app = Flask(__name__)
 config.load_config(app)
 player_names = ["alfred", "betty", "chris", "dee"]
 players = [Player(handle=name, hand=Hand([]), id=uuid.uuid4())
            for name in player_names]
+player_manager = PlayerManager(players)
 print(players)
-game = Game(players, Deck(), little_ante=5, big_ante=10)
-session = Session(game=game)
+game = Game(players, Deck(), little_ante=10, big_ante=20)
+game_session = GameSession(game=game)
 
-command_evaluator = CommandEvaluator(session)
-session.current_round.deal_cards_1_2()
+command_evaluator = CommandEvaluator(game_session)
+game_session.current_round.deal_cards_1_2()
 
-service = session.current_round
+service = game_session.current_round
+app.secret_key = config.SECRET
 
+@app.route("/god_mode")
+def friendly_god_game_view():
+    return render_template('root_template.html', session=game_session)
 
 @app.route("/")
-def friendly_god_game_view():
-    return render_template('root_template.html', session=session)
-
+def player_view():
+    player = player_manager.get_player_by_id(session['player_id'])
+    app.logger.info(f"player ID = {session['player_id']}")
+    return render_template('player_view.html', session=game_session, player=player)
 
 @app.route("/v1/game", methods=["GET"])
 def get_game_service_game_state():
-    return service.dict_repr()
+    player = player_manager.get_player_by_id(session['player_id'])
+    return {'player': player, 'game': service.dict_repr()}
 
+@app.route("/v1/auth_by_name/<name>", methods=['POST', 'GET'])
+def set_session_player_by_name(name):
+    player = player_manager.get_player_by_handle(name)
+    session['player_id'] = player.id
+    return {'auth': 'success', 'player_id': player.id}
 
 @app.route("/v1/game/raise", methods=["POST"])
 def player_raise():
@@ -111,6 +124,6 @@ def deal_next_game():
 
 @app.route("/v1/session/terminate", methods=["POST"])
 def end_session():
-    x = session.end_session()
+    x = game_session.end_session()
 
     return {"service": service.dict_repr(), "commandResult": x}

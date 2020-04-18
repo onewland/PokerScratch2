@@ -10,7 +10,7 @@ class ImpossibleCondition(Exception):
     pass
 
 
-class Session:
+class GameSession:
     def __init__(self, *, game: Game):
         self.dealer_rotation = PlayerRotation(game.players)
         self.game = game

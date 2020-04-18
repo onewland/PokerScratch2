@@ -10,19 +10,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="{{ url_for('static', filename='game.js') }}"></script>
+        <title>Poker de Oliver: In-Game View</title>
     </head>
     <body>
         <div class="container mt-md-2">
             <div class="row">
                 <div class="col">
-                    <h3>Board State</h3>
+                    <table class='player-description table'>
+                        <thead>
+                            <tr>
+                                <th>Your Shit ({{player.handle}})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hand</td>
+                                <td>{{ player.hand }}</td>
+                            </tr>
+                            <tr>
+                                <td>Wagered this round</td>
+                                <td>{{ player.current_wager }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total bank</td>
+                                <td>{{ player.current_bank }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <h3>Actions</h3>
                     <hr/>
-                    <ul>
-                        <li>phase - {{ service.phase }}</li>
-                        <li>in_betting_round - {{ service.inside_betting_round }}</li>
-                        <li>current_pot - {{ service.pot_total }}</li>
-                        <li>winner - {{ service.winner }}</li>
-                        <li>shared_cards - {{ service.shared_as_nice_str() }}</li>
+                    <ul class="list-group">
+                        <li class="list-group-item" style="text-align: center;"><button class="btn btn-primary on-turn-only-action">Check</button></li>
+                        <li class="list-group-item" style="text-align: center;"><button class="btn btn-primary on-turn-only-action">Fold</button></li>
+                        <li class="list-group-item" style="text-align: center;"><button class="btn btn-warning on-turn-only-action">Call</button>
+                            <br/>
+                            (costs: <span id="call_cost">N/A</span>)
+                        </li>
+                        <li class="list-group-item" style="text-align: center;">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="{{ service.game.big_ante }}" aria-label="Raise amount">
+                                <div class="input-group-append">
+                                    <button class="btn btn-warning on-turn-only-action">Raise</button>
+                                </div>
+                            </div>
+
+                        </li>
                     </ul>
                 </div>
                 <div class="col">
@@ -34,28 +68,6 @@
                         <li>current_pot - {{ round.round_pot }}</li>
                     </ul>
                 </div>
-                <div class="col">
-                    <h3>Session state</h3>
-                    <hr/>
-
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Player</th>
-                                <th>Funds</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for player in session.game.players %}
-                                <tr>
-                                    <td>{{ player.handle }}</td>
-                                    <td>{{ player.current_bank }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
             </div>
 
             <br/>
@@ -71,16 +83,8 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>ID</td>
-                                <td>{{ player.id }}</td>
-                            </tr>
-                            <tr>
                                 <td>Name</td>
                                 <td>{{ player.handle }}</td>
-                            </tr>
-                            <tr>
-                                <td>Hand</td>
-                                <td>{{ player.hand }}</td>
                             </tr>
                             <tr>
                                 <td>Wagered this round</td>
@@ -100,16 +104,8 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>ID</td>
-                                <td>{{ player.id }}</td>
-                            </tr>
-                            <tr>
                                 <td>Name</td>
                                 <td>{{ player.handle }}</td>
-                            </tr>
-                            <tr>
-                                <td>Hand</td>
-                                <td>{{ player.hand }}</td>
                             </tr>
                         </tbody>
                     </table>
